@@ -40,6 +40,7 @@ def api():
     else:
         check = False
         success = False
+        last_episode_number = ""        
     return jsonify(
         {
             "success": success,
