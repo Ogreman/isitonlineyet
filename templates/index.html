@@ -1,0 +1,58 @@
+
+{% extends 'layout.html' %}
+{% block body %}
+<h1 id="check" style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-size: 63px;
+">
+</h1>
+
+<script type=text/javascript>
+if (window.jQuery){
+    $(function() {
+        $.getJSON($SCRIPT_ROOT + '/api', {
+            programme: "p0118t80"
+        }, function(data) {
+            if (data.error_message) {
+                console.log(data.error_message);
+            } else {
+                if (data.check) {
+                    $('#check')[0].innerHTML="YES!"
+                } else {
+                    $('#check')[0].innerHTML="NO!"
+                }
+            }
+        });
+        return false;
+    });
+} else {
+    request = new XMLHttpRequest;
+    request.open('GET', '/api/?programme=p0118t80', true);
+    check = document.getElementById("check");
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400){
+        data = JSON.parse(request.responseText);
+        if (data.error_message) {
+            console.log(data.error_message);
+        } else {
+            if (data.leap) {
+                check.innerHTML="YES!"
+            } else {
+                check.innerHTML="NO!"
+            }
+        }
+      } else {
+        console.log("request error");
+      }
+    };
+    request.onerror = function() {
+        console.log("connection error");
+    };
+    request.send();
+}
+</script>
+
+{% endblock %}
