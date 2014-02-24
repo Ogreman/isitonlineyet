@@ -3,7 +3,7 @@
 import sys
 import json
 import argparse
-import requests 
+import requests
 from datetime import datetime
 from dateutil import parser
 from flask import (
@@ -21,6 +21,11 @@ def index():
     """
     Return the main view.
     """
+    return render_template('midwife.html')
+
+
+@app.route('/other/')
+def other():
     return render_template('index.html')
 
 
@@ -34,13 +39,13 @@ def api():
         broadcast = parser.parse(
             js['episodes'][0]['programme']['first_broadcast_date']
         )
-        check = today.strftime("%U") == broadcast.strftime("%U") 
+        check = today.strftime("%U") == broadcast.strftime("%U")
         last_episode_number = js['episodes'][0]['programme']['position']
         success = True
     else:
         check = False
         success = False
-        last_episode_number = ""        
+        last_episode_number = ""
     return jsonify(
         {
             "success": success,

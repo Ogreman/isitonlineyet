@@ -1,57 +1,68 @@
 
 {% extends 'layout.html' %}
 {% block body %}
-<h1 id="check" style="
+<h1 id="exists" style="
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 40%;
+    left: 25%;
     font-size: 63px;
 ">
+<p>
+    <input placeholder="programme id" type="text" id="progname" onkeydown="if (event.keyCode == 13) document.getElementById('btnCheck').click()">
+    <button id="btnCheck" onclick="handleForm()" type="button">check</button></br>
+    <div id="amt" style="font-size: 130px;"></div>
+</p>
 </h1>
 
 <script type=text/javascript>
-if (window.jQuery){
-    $(function() {
-        $.getJSON($SCRIPT_ROOT + '/api', {
-            programme: "p0118t80"
-        }, function(data) {
-            if (data.error_message) {
-                console.log(data.error_message);
-            } else {
-                if (data.check) {
-                    $('#check')[0].innerHTML="YES!"
+function handleForm(){
+    if (!window.jQuery){
+        $(function() {
+            $("#amt")[0].innerHTML="checking..."
+            $.getJSON($SCRIPT_ROOT + '/api', {
+                programme: $("#progname").val()
+            }, function(data) {
+                if (data.success) {
+                    if (data.check) {
+                        $('#amt')[0].innerHTML="YES!"
+                    } else {
+                        $('#amt')[0].innerHTML="NO!"
+                    }
                 } else {
-                    $('#check')[0].innerHTML="NO!"
+                    $('#amt')[0].innerHTML="Failed!"
                 }
-            }
+            });
+            return false;
         });
-        return false;
-    });
-} else {
-    request = new XMLHttpRequest;
-    request.open('GET', '/api/?programme=p0118t80', true);
-    check = document.getElementById("check");
+    } else {
+        request = new XMLHttpRequest;
+        programme = document.getElementById('progname').value
+        request.open('GET', '/api/?programme='+programme, true);
+        check = document.getElementById("amt");
+        check.innerHTML="checking..."
 
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400){
-        data = JSON.parse(request.responseText);
-        if (data.error_message) {
-            console.log(data.error_message);
-        } else {
-            if (data.leap) {
-                check.innerHTML="YES!"
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400){
+            data = JSON.parse(request.responseText);
+            if (data.success) {
+                if (data.check) {
+                    check.innerHTML="YES!"
+                } else {
+                    check.innerHTML="NO!"
+                }
             } else {
-                check.innerHTML="NO!"
+                check.innerHTML="Failed!"
             }
-        }
-      } else {
-        console.log("request error");
-      }
-    };
-    request.onerror = function() {
-        console.log("connection error");
-    };
-    request.send();
+          } else {
+            console.log("request error");
+          }
+        };
+        request.onerror = function() {
+            console.log("connection error");
+            check.innerHTML="Failed!"
+        };
+        request.send();
+    }
 }
 </script>
 
